@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Database</title>
+</head>
+<body>
+    <h1>Person Database</h1>
+    <form action="/add" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+        <button type="submit">Add Entry</button>
+    </form>
+    <br>
+    <h2>Entries:</h2>
+    <ul>
+        {% for row in rows %}
+            <li>{{ row[1] }}, {{ row[2] }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

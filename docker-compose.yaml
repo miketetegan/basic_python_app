@@ -1,0 +1,30 @@
+version: '3'
+services:
+  psql:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+#    image: tetegan.azurecr.io/my-app:latest
+    image: new-app
+    ports:
+      - 8080:8080
+    depends_on:
+      psql:
+        condition: service_healthy
+#    condition: service_healthy psql
+
+volumes:
+  db-data:
+    driver: local
+

@@ -1,0 +1,42 @@
+# Stage 1: Build the Flask application
+FROM python:3.8-slim as flask-builder
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Set working directory in the container
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code into the container
+COPY code/ /app/
+
+# Stage 2: Run the Flask application
+FROM flask-builder as flask-app
+
+# Expose port 5000 for the Flask app
+EXPOSE 8080
+
+# Command to run the Flask application
+CMD ["python", "app.py"]
+
+# Stage 3: Run PostgreSQL
+FROM postgres:latest as postgres-db
+
+# Set environment variables
+ENV POSTGRES_DB=info
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=password
+
+# Expose the PostgreSQL port
+EXPOSE 5432

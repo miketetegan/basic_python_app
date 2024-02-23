@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+#optional (better external in docker compose file)
+#ENV POSTGRES_PASSWORD=password
+
+#WORKDIR
+WORKDIR /app/ 
+
+#RUN run any linux command 
+#RUN mkdir -p /app/
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN apt-get install pip 
+# Copy and install Python dependencies
+COPY /code/requirements.txt /app/
+#RUN apt-get install python-flask 
+#RUN apt-get install python-psycopg2
+RUN pip install -r requirements.txt
+#COPY executes on the host  
+COPY code /app/
+
+#CMD executes an entry point linux command 
+#Only one CMD in a dockerfile 
+CMD ["python3","app.py"]

@@ -1,0 +1,61 @@
+from flask import Flask, render_template, request, redirect
+import psycopg2
+
+app = Flask(__name__)
+
+# Function to connect to the PostgreSQL database
+def connect_to_db():
+    conn = psycopg2.connect(
+        dbname="info",
+        user="postgres",  # replace with your PostgreSQL username
+        password="password",  # replace with your PostgreSQL password
+        host="psql",
+        port="5432"
+    )
+    return conn
+
+ Function to create the database if not exists
+def create_db():
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute("CREATE DATABASE IF NOT EXISTS info")
+    conn.commit()
+    conn.close()
+
+# Function to create the table if not exists
+def create_table():
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS person (id SERIAL PRIMARY KEY, name VARCHAR, age INTEGER)")
+    conn.commit()
+    conn.close()
+
+create_db()
+
+# Home page route
+@app.route('/')
+def home():
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM person")
+    rows = cur.fetchall()
+    conn.close()
+    return render_template('index.html', rows=rows)
+
+# Add entry route
+@app.route('/add', methods=['POST'])
+def add_entry():
+    name = request.form['name']
+    age = request.form['age']
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute("INSERT INTO person (name, age) VALUES (%s, %s)", (name, age))
+    conn.commit()
+    conn.close()
+    return redirect('/')
+
+
+if __name__ == '__main__':
+#    create_db()
+    create_table()
+    app.run(host='0.0.0.0', port=8080, debug=True)
