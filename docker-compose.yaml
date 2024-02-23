@@ -16,7 +16,8 @@ services:
 
   app:
 #    image: tetegan.azurecr.io/my-app:latest
-    image: new-app
+    image: miketetegan/app:latest
+#    image: new-app
     ports:
       - 8080:8080
     depends_on:
